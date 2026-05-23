@@ -1,0 +1,10 @@
+name = "bidtrace-proxy"
+main = "bidtrace_all_in_one_worker.js"
+compatibility_date = "2026-05-22"
+account_id = "65ce4d6695638703c65edba36e718eb1"
+workers_dev = true
+
+routes = [
+  { pattern = "bid-trace.com/*", zone_name = "bid-trace.com" },
+  { pattern = "www.bid-trace.com/*", zone_name = "bid-trace.com" }
+]
