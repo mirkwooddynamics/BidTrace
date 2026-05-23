@@ -321,6 +321,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 .qa-label { font-size: 12px; font-weight: 600; margin-top: 2px; }
 
 .qa-table-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 380px); border-radius: var(--r); border: 1px solid var(--border2); }
+#page-new-project.step-qa-active > .page-body { overflow: hidden; display: flex; flex-direction: column; }
+#page-new-project.step-qa-active .upload-stepper { flex-shrink: 0; }
+#page-new-project.step-qa-active #np-step4 { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+#page-new-project.step-qa-active .qa-table-wrap { flex: 1; min-height: 0; max-height: none !important; }
 .qa-table { width: 100%; border-collapse: collapse; }
 .qa-table th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-dim); border-bottom: 1px solid var(--border2); letter-spacing: 0.4px; text-transform: uppercase; }
 .qa-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 12px; }
@@ -710,8 +714,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 
 /* Estimate page layout hardening */
 #page-estimate { flex: 1; min-width: 0; min-height: 0; }
-#page-estimate .page-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; padding: 16px 20px; }
-#page-estimate .est-table-wrap { flex: 1; min-height: 0; overflow-x: auto; overflow-y: auto; border: 1px solid var(--border2); border-radius: var(--r); }
+#page-estimate .page-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 16px 20px; }
+#page-estimate .est-table-wrap { flex: 1; min-height: 0; overflow-x: auto; overflow-y: auto; max-height: none; border: 1px solid var(--border2); border-radius: var(--r); }
 
 /* ── EXPERT REVIEW MODAL ──────────────────────────────────────────────── */
 #er-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.72);display:none;align-items:flex-start;justify-content:center;z-index:900;padding:24px 20px;overflow-y:auto; }
@@ -1303,7 +1307,7 @@ function hideLanding() {
           <div style="background:var(--warn-dim);border:1px solid rgba(255,181,71,0.2);border-radius:var(--r2);padding:12px 16px;font-size:12px;color:var(--warn);margin-bottom:18px;display:flex;align-items:center;gap:10px" id="qa-gate-msg">
             <span>⚠</span> <span>You must resolve all flagged items before proceeding. Edit quantities or approve as-is.</span>
           </div>
-          <div class="qa-table-wrap" style="max-height:calc(100vh - 420px);overflow-y:auto;overflow-x:auto">
+          <div class="qa-table-wrap">
             <table class="qa-table">
               <thead><tr>
                 <th>Bid Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Price Code</th><th>Unit Price</th><th>Confidence</th><th>Status</th><th>Action</th>
@@ -4681,6 +4685,7 @@ function loadDemoEstimate(p) {
 
 // ── NEW PROJECT STEPS ─────────────────────────────────────────────────────
 function goStep(n) {
+  document.getElementById('page-new-project').classList.remove('step-qa-active');
   if (n === 1) {
     ['np-step1','np-step2','np-step3','np-step4','np-step5'].forEach(function(id,i){document.getElementById(id).style.display=i===0?'':'none';});
     updateStepper(1);
@@ -4704,6 +4709,7 @@ function goStep(n) {
   } else if (n === 4) {
     document.getElementById('np-step3').style.display='none';
     document.getElementById('np-step4').style.display='';
+    document.getElementById('page-new-project').classList.add('step-qa-active');
     updateStepper(4);
     renderQA();
   } else if (n === 5) {
