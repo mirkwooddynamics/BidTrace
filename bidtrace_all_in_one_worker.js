@@ -321,9 +321,14 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 .qa-label { font-size: 12px; font-weight: 600; margin-top: 2px; }
 
 .qa-table-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 380px); border-radius: var(--r); border: 1px solid var(--border2); }
+#page-new-project.step-qa-active #np-step1,
+#page-new-project.step-qa-active #np-step2,
+#page-new-project.step-qa-active #np-step3,
+#page-new-project.step-qa-active #np-step5 { display: none !important; }
 #page-new-project.step-qa-active > .page-body { overflow: hidden; display: flex; flex-direction: column; }
 #page-new-project.step-qa-active .upload-stepper { flex-shrink: 0; }
 #page-new-project.step-qa-active #np-step4 { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+#page-new-project.step-qa-active #np-step4 > *:not(.qa-table-wrap) { flex-shrink: 0; }
 #page-new-project.step-qa-active .qa-table-wrap { flex: 1; min-height: 0; max-height: none !important; }
 .qa-table { width: 100%; border-collapse: collapse; }
 .qa-table th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-dim); border-bottom: 1px solid var(--border2); letter-spacing: 0.4px; text-transform: uppercase; }
