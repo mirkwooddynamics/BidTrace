@@ -1335,6 +1335,7 @@ function hideLanding() {
         <div id="np-step5" style="display:none">
         </div>
       </div>
+    </div>
 
     <!-- ESTIMATE PAGE -->
     <div class="page" id="page-estimate">
