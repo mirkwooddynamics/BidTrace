@@ -328,8 +328,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 #page-new-project.step-qa-active > .page-body { overflow: hidden; display: flex; flex-direction: column; }
 #page-new-project.step-qa-active .upload-stepper { flex-shrink: 0; }
 #page-new-project.step-qa-active #np-step4 { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
-#page-new-project.step-qa-active #np-step4 > *:not(.qa-table-wrap) { flex-shrink: 0; }
+#qa-top-panel { flex: 1; min-height: 120px; overflow: hidden; display: flex; flex-direction: column; }
+#qa-top-panel > *:not(.qa-table-wrap) { flex-shrink: 0; }
 #page-new-project.step-qa-active .qa-table-wrap { flex: 1; min-height: 0; max-height: none !important; }
+#qa-resize-handle { height: 6px; cursor: row-resize; background: var(--border2); flex-shrink: 0; }
+#qa-resize-handle:hover, #qa-resize-handle.dragging { background: var(--accent-dim); }
+#qa-bottom-panel { height: 220px; min-height: 60px; overflow-y: auto; flex-shrink: 0; border-top: 1px solid var(--border2); padding: 10px 0; }
 .qa-table { width: 100%; border-collapse: collapse; }
 .qa-table th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-dim); border-bottom: 1px solid var(--border2); letter-spacing: 0.4px; text-transform: uppercase; }
 .qa-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 12px; }
@@ -1276,53 +1280,54 @@ function hideLanding() {
 
         <!-- STEP 4: QA Review -->
         <div id="np-step4" style="display:none">
-          <!-- SPEC NOTES PANEL -->
-          <div id="spec-notes-panel" style="display:none;background:var(--surface);border:1px solid rgba(77,184,255,0.25);border-radius:var(--r);margin-bottom:16px;overflow:hidden">
-            <div style="padding:12px 18px;background:var(--surface2);border-bottom:1px solid rgba(77,184,255,0.15);display:flex;align-items:center;justify-content:space-between">
-              <div style="display:flex;align-items:center;gap:10px">
-                <div style="font-size:13px;font-weight:700;color:var(--info)">Specification Instructions &amp; Method Notes</div>
-                <div style="font-size:11px;color:var(--text-dim);background:var(--info-dim);padding:2px 8px;border-radius:10px">not on estimate</div>
+          <!-- TOP PANEL: QA table takes majority of screen -->
+          <div id="qa-top-panel">
+            <div id="demo-data-banner" class="demo-data-banner">
+              <div class="demo-icon">⚠️</div>
+              <div>
+                <strong>Quantities not yet extracted — enter your own from takeoff</strong>
+                PDF parsing is not yet connected, so quantities have been left blank. Line items and price book codes are pre-loaded. Enter the correct quantity for each line item from your site takeoff or tender documents.
               </div>
-              <button onclick="document.getElementById('spec-notes-body').style.display=document.getElementById('spec-notes-body').style.display==='none'?'block':'none';this.textContent=this.textContent==='Hide'?'Show':'Hide'" style="padding:4px 12px;background:transparent;border:1px solid rgba(77,184,255,0.25);border-radius:4px;color:var(--text-dim);font-size:11px;cursor:pointer">Hide</button>
             </div>
-            <div id="spec-notes-body" style="padding:16px 20px;max-height:380px;overflow-y:auto"></div>
-          </div>
-
-          <!-- SCOPE REPORT PANEL -->
-          <div id="scope-report-panel" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);margin-bottom:20px;overflow:hidden">
-            <div style="padding:14px 18px;background:var(--surface2);border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between">
-              <div style="font-size:13px;font-weight:700;color:var(--accent)">📋 Scope & Method Report</div>
-              <button onclick="toggleScopeReport()" style="padding:4px 12px;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text-dim);font-size:11px;cursor:pointer">Hide</button>
+            <div class="qa-summary">
+              <div class="qa-card qa-ok"><div class="qa-icon">✅</div><div><div class="qa-count" id="qa-ok-count">0</div><div class="qa-label">Confirmed — High Confidence</div></div></div>
+              <div class="qa-card qa-warn"><div class="qa-icon">⚠️</div><div><div class="qa-count" id="qa-warn-count">0</div><div class="qa-label">Review Required</div></div></div>
+              <div class="qa-card qa-fail"><div class="qa-icon">🚩</div><div><div class="qa-count" id="qa-fail-count">0</div><div class="qa-label">Missing / Unmatched</div></div></div>
             </div>
-            <div id="scope-report-body" style="padding:20px;font-size:13px;line-height:1.8;font-family:var(--serif);color:var(--text-dim);white-space:pre-wrap;max-height:320px;overflow-y:auto"></div>
-          </div>
-          <div id="demo-data-banner" class="demo-data-banner">
-            <div class="demo-icon">⚠️</div>
-            <div>
-              <strong>Quantities not yet extracted — enter your own from takeoff</strong>
-              PDF parsing is not yet connected, so quantities have been left blank. Line items and price book codes are pre-loaded. Enter the correct quantity for each line item from your site takeoff or tender documents.
+            <div style="background:var(--warn-dim);border:1px solid rgba(255,181,71,0.2);border-radius:var(--r2);padding:12px 16px;font-size:12px;color:var(--warn);margin-bottom:10px;display:flex;align-items:center;gap:10px" id="qa-gate-msg">
+              <span>⚠</span> <span>You must resolve all flagged items before proceeding. Edit quantities or approve as-is.</span>
+            </div>
+            <div class="qa-table-wrap">
+              <table class="qa-table">
+                <thead><tr>
+                  <th>Bid Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Price Code</th><th>Unit Price</th><th>Confidence</th><th>Status</th><th>Action</th>
+                </tr></thead>
+                <tbody id="qa-tbody"></tbody>
+              </table>
+            </div>
+            <div style="display:flex;gap:10px;padding:12px 0 2px;align-items:center">
+              <button class="btn btn-ghost" onclick="goStep(2)">← Back to Upload</button>
+              <button class="btn btn-primary btn-lg" id="proceed-est-btn" onclick="goStep(5)" disabled>Proceed to Estimate →</button>
+              <span style="font-size:12px;color:var(--text-dim);font-family:var(--serif);font-style:italic" id="qa-remain"></span>
             </div>
           </div>
-          <div class="qa-summary">
-            <div class="qa-card qa-ok"><div class="qa-icon">✅</div><div><div class="qa-count" id="qa-ok-count">0</div><div class="qa-label">Confirmed — High Confidence</div></div></div>
-            <div class="qa-card qa-warn"><div class="qa-icon">⚠️</div><div><div class="qa-count" id="qa-warn-count">0</div><div class="qa-label">Review Required</div></div></div>
-            <div class="qa-card qa-fail"><div class="qa-icon">🚩</div><div><div class="qa-count" id="qa-fail-count">0</div><div class="qa-label">Missing / Unmatched</div></div></div>
-          </div>
-          <div style="background:var(--warn-dim);border:1px solid rgba(255,181,71,0.2);border-radius:var(--r2);padding:12px 16px;font-size:12px;color:var(--warn);margin-bottom:18px;display:flex;align-items:center;gap:10px" id="qa-gate-msg">
-            <span>⚠</span> <span>You must resolve all flagged items before proceeding. Edit quantities or approve as-is.</span>
-          </div>
-          <div class="qa-table-wrap">
-            <table class="qa-table">
-              <thead><tr>
-                <th>Bid Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Price Code</th><th>Unit Price</th><th>Confidence</th><th>Status</th><th>Action</th>
-              </tr></thead>
-              <tbody id="qa-tbody"></tbody>
-            </table>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:18px;align-items:center">
-            <button class="btn btn-ghost" onclick="goStep(2)">← Back to Upload</button>
-            <button class="btn btn-primary btn-lg" id="proceed-est-btn" onclick="goStep(5)" disabled>Proceed to Estimate →</button>
-            <span style="font-size:12px;color:var(--text-dim);font-family:var(--serif);font-style:italic" id="qa-remain"></span>
+          <!-- RESIZE HANDLE — drag up/down to adjust panel sizes -->
+          <div id="qa-resize-handle" title="Drag to resize"></div>
+          <!-- BOTTOM PANEL: Spec notes & scope report -->
+          <div id="qa-bottom-panel">
+            <div id="spec-notes-panel" style="display:none;border-radius:var(--r);overflow:hidden">
+              <div style="padding:8px 16px;background:var(--surface2);border-bottom:1px solid rgba(77,184,255,0.15);display:flex;align-items:center;gap:10px">
+                <div style="font-size:12px;font-weight:700;color:var(--info)">Specification Instructions &amp; Method Notes</div>
+                <div style="font-size:10px;color:var(--text-dim);background:var(--info-dim);padding:1px 7px;border-radius:10px">not on estimate</div>
+              </div>
+              <div id="spec-notes-body" style="padding:12px 16px"></div>
+            </div>
+            <div id="scope-report-panel" style="display:none;border-radius:var(--r);overflow:hidden;margin-top:8px">
+              <div style="padding:8px 16px;background:var(--surface2);border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px">
+                <div style="font-size:12px;font-weight:700;color:var(--accent)">📋 Scope &amp; Method Report</div>
+              </div>
+              <div id="scope-report-body" style="padding:12px 16px;font-size:13px;line-height:1.8;font-family:var(--serif);color:var(--text-dim);white-space:pre-wrap"></div>
+            </div>
           </div>
         </div>
 
@@ -4716,6 +4721,7 @@ function goStep(n) {
     document.getElementById('page-new-project').classList.add('step-qa-active');
     updateStepper(4);
     renderQA();
+    initQAResize();
   } else if (n === 5) {
     // Build estimate from QA items and go to estimate page
     state.estimateItems = buildEstimateItems();
@@ -4745,6 +4751,32 @@ function goStep(n) {
     document.getElementById('extract-btn').disabled = true;
     // Restore estimate items so export still works
     state.estimateItems = savedEstimate;
+  }
+}
+
+function initQAResize() {
+  var handle = document.getElementById('qa-resize-handle');
+  var bottom = document.getElementById('qa-bottom-panel');
+  if (!handle || !bottom || handle._resizeInited) return;
+  handle._resizeInited = true;
+  var startY, startH;
+  handle.addEventListener('mousedown', function(e) {
+    startY = e.clientY;
+    startH = bottom.offsetHeight;
+    handle.classList.add('dragging');
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    e.preventDefault();
+  });
+  function onMove(e) {
+    var delta = startY - e.clientY;
+    var newH = Math.max(60, Math.min(startH + delta, window.innerHeight * 0.65));
+    bottom.style.height = newH + 'px';
+  }
+  function onUp() {
+    handle.classList.remove('dragging');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
   }
 }
 
