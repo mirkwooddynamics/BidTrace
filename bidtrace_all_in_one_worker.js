@@ -4694,11 +4694,8 @@ function loadDemoEstimate(p) {
 
 // ── NEW PROJECT STEPS ─────────────────────────────────────────────────────
 function goStep(n) {
-  document.getElementById('page-new-project').classList.remove('step-qa-active');
-  if (n === 1) {
-    ['np-step1','np-step2','np-step3','np-step4','np-step5'].forEach(function(id,i){document.getElementById(id).style.display=i===0?'':'none';});
-    updateStepper(1);
-  } else if (n === 2) {
+  // Validate BEFORE modifying display states so a failed validation doesn't hide the current step
+  if (n === 2) {
     var name = document.getElementById('np-name').value.trim();
     if (!name) { showToast('Enter a project name', 'warn'); return; }
     state.projectInfo = {
@@ -4707,17 +4704,24 @@ function goStep(n) {
       date: document.getElementById('np-date').value,
       number: document.getElementById('np-number').value,
     };
-    document.getElementById('np-step1').style.display='none';
-    document.getElementById('np-step2').style.display='';
+  }
+  // Always reset: remove qa-active class and hide every step panel before showing the target
+  document.getElementById('page-new-project').classList.remove('step-qa-active');
+  ['np-step1','np-step2','np-step3','np-step4','np-step5'].forEach(function(id) {
+    document.getElementById(id).style.display = 'none';
+  });
+  if (n === 1) {
+    document.getElementById('np-step1').style.display = '';
+    updateStepper(1);
+  } else if (n === 2) {
+    document.getElementById('np-step2').style.display = '';
     updateStepper(2);
   } else if (n === 3) {
-    document.getElementById('np-step2').style.display='none';
-    document.getElementById('np-step3').style.display='';
+    document.getElementById('np-step3').style.display = '';
     updateStepper(3);
     runExtraction().catch(function(e){ console.error("Extraction error:", e); });
   } else if (n === 4) {
-    document.getElementById('np-step3').style.display='none';
-    document.getElementById('np-step4').style.display='';
+    document.getElementById('np-step4').style.display = '';
     document.getElementById('page-new-project').classList.add('step-qa-active');
     updateStepper(4);
     renderQA();
